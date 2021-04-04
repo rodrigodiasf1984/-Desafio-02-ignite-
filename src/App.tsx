@@ -1,36 +1,20 @@
 import { useEffect, useState } from 'react';
-import { MovieCard } from './components/MovieCard';
 
 import { SideBar } from './components/SideBar';
-// import { Content } from './components/Content';
+import { Content } from './components/Content';
 
 import { api } from './services/api';
+
 import { GenreResponseProps, MovieProps } from './@types/types';
 
 import './styles/global.scss';
 
-
-import './styles/content.scss';
-
-
 export function App() {
-
-
+  
   const [genres, setGenres] = useState<GenreResponseProps[]>([]);
-
   const [movies, setMovies] = useState<MovieProps[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<GenreResponseProps>({} as GenreResponseProps);
   const [selectedGenreId, setSelectedGenreId] = useState(1);
-  
-  function handleClickButton(id: number) {
-    setSelectedGenreId(id);
-  }
-
-  useEffect(() => {
-    api.get<GenreResponseProps[]>('genres').then(response => {
-      setGenres(response.data);
-    });
-  }, []);
 
   useEffect(() => {
     api.get<MovieProps[]>(`movies/?Genre_id=${selectedGenreId}`).then(response => {
@@ -42,13 +26,25 @@ export function App() {
     })
   }, [selectedGenreId]);
 
+  useEffect(() => {
+    api.get<GenreResponseProps[]>('genres').then(response => {
+      setGenres(response.data);
+    });
+  }, []);
 
+
+  function handleClickButton(id: number) {
+    const chosenGenre = genres?.find(genre=>genre.id===id)
+
+    if(chosenGenre){
+      setSelectedGenreId(chosenGenre.id);     
+    }
+  }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
-      <SideBar handleClickButton={()=>{handleClickButton(selectedGenreId)}}  genres={genres} selectedGenreId={selectedGenreId}/>
-   
-      
+    <div style={{ display: 'flex', flexDirection: 'row'}}>
+      <SideBar handleClickButton={handleClickButton}  genres={genres} selectedGenreId={selectedGenreId}/>         
+      <Content movies={movies} selectedGenre={selectedGenre} />
     </div>
   )
 }
