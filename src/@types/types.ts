@@ -21,3 +21,12 @@ export interface SidebarProps{
   selectedGenreId: number; 
   handleClickButton: (x:number)=>void;
 }
+
+export interface ContentProps{
+  selectedGenre:GenreResponseProps;
+  movies: Array<MovieProps>;
+}
+
+export interface HeaderProps{
+  selectedGenre:GenreResponseProps;
+}
